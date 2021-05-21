@@ -55,8 +55,8 @@ def change(message):
 def check_correct(message):
 	findtex = -1
 	for i in dictname:
-			if i.lower().find(message.text.lower()) >= 0:
-				findtex += 2
+		if i.lower().find(message.text.lower()) >= 0:
+			findtex += 2
 	return findtex
 
 
@@ -140,7 +140,8 @@ def answer(message):
 			bot.send_message(message.chat.id, 'Извините, но такой запчасти на данную модель нет,проверьте корректность введёных данных и попробуйте снова,если вы не знаете модель телефона,выберите функцию "Справка о модели телефона" или нажмите отмена',reply_markup = keyboard_cancel())
 			bot.register_next_step_handler(message, answer)
 		else:
-			if id_pars == '&q=защитное+стекло+':
+			findtex = check_correct(message)
+			if id_pars == '&q=защитное+стекло+' and findtex >= 0:
 				for i in dictname:
 					if i.lower().find(message.text.lower()) >= 0:
 						info += str(counter) + '. ' + i + '\n\n'
@@ -148,13 +149,16 @@ def answer(message):
 				info += 'Отправьте в чат номер запчасти, цену на замену которой вы бы хотели узнать либо нажмите отмена'
 				bot.send_message(message.chat.id, info, reply_markup = keyboard_cancel())
 				bot.register_next_step_handler(message, orient_price)
-			else:
+			elif id_pars == 'section_id=93&q=' or id_pars == 'section_id=95&q=':
 				for i in dictname:
 					info += str(counter) + '. ' + i + '\n\n'
 					counter += 1
 				info += 'Отправьте в чат номер запчасти, цену на замену которой вы бы хотели узнать либо нажмите отмена'
 				bot.send_message(message.chat.id, info, reply_markup = keyboard_cancel())
 				bot.register_next_step_handler(message, orient_price)
+			else:
+				bot.send_message(message.chat.id, 'Извините, но такой запчасти на данную модель нет,проверьте корректность введёных данных и попробуйте снова,если вы не знаете модель телефона,выберите функцию "Справка о модели телефона" или нажмите отмена',reply_markup = keyboard_cancel())
+				bot.register_next_step_handler(message, answer)
 
 def orient_price(message):
 	check = 0
