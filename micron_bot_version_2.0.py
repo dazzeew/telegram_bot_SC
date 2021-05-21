@@ -82,7 +82,9 @@ def keyboard():
 def keyboard_cancel():
 	markup_cancel = types.ReplyKeyboardMarkup(one_time_keyboard = True, resize_keyboard = True)
 	button =  types.KeyboardButton(masscom[6])
+	button2 =  types.KeyboardButton(masscom[3])
 	markup_cancel.add(button)
+	markup_cancel.add(button2)
 	return markup_cancel
 
 def send_telegram(text: str):
@@ -126,30 +128,30 @@ def answer(message):
 		bot.send_message(message.chat.id,'Введите модель телефона или нажмите отмена',reply_markup = keyboard_cancel())
 		bot.register_next_step_handler(message,answer)
 	else:
-		for i in range(len(masscom)):
-			if message.text == masscom[i]:
-				timer += 1
-		if timer > 0:
-			bot.send_message(message.chat.id, 'Это не модель телефона\n\nКнопки для обращения к боту не являются моделью телефона,если вы не знаете модель телефона,выберите функцию "Справка о модели телефона"\n\n Введите пожалуйста корректную модель телефона или нажмите отмена',reply_markup = keyboard_cancel())
+		for i in range(len(message.text)):
+			if message.text[i] == ' ':
+				model += '+'
+			else: 
+				model += message.text[i]
+		new_url = def_url + id_pars + model + '&how=r'
+		global dictname
+		dictname = Parcer(new_url)
+		if dictname == {}:
+			bot.send_message(message.chat.id, 'Извините, но такой запчасти на данную модель нет,проверьте корректность введёных данных и попробуйте снова,если вы не знаете модель телефона,выберите функцию "Справка о модели телефона" или нажмите отмена',reply_markup = keyboard_cancel())
 			bot.register_next_step_handler(message, answer)
 		else:
-			for i in range(len(message.text)):
-				if message.text[i] == ' ':
-					model += '+'
-				else: 
-					model += message.text[i]
-			new_url = def_url + id_pars + model + '&how=r'
-			global dictname
-			dictname = Parcer(new_url)
-			findtext = check_correct(message)
-			if dictname == {} or findtext == -1:
-				bot.send_message(message.chat.id, 'Извините, но такой запчасти на данную модель нет,проверьте корректность введёных данных и попробуйте снова,либо же нажмите отмена',reply_markup = keyboard_cancel())
-				bot.register_next_step_handler(message, answer)
-			else:
+			if id_pars == '&q=защитное+стекло+':
 				for i in dictname:
 					if i.lower().find(message.text.lower()) >= 0:
 						info += str(counter) + '. ' + i + '\n\n'
 						counter += 1
+				info += 'Отправьте в чат номер запчасти, цену на замену которой вы бы хотели узнать либо нажмите отмена'
+				bot.send_message(message.chat.id, info, reply_markup = keyboard_cancel())
+				bot.register_next_step_handler(message, orient_price)
+			else:
+				for i in dictname:
+					info += str(counter) + '. ' + i + '\n\n'
+					counter += 1
 				info += 'Отправьте в чат номер запчасти, цену на замену которой вы бы хотели узнать либо нажмите отмена'
 				bot.send_message(message.chat.id, info, reply_markup = keyboard_cancel())
 				bot.register_next_step_handler(message, orient_price)
