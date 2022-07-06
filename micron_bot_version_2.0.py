@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 
 
 
-#Начало для сервер
+#Начало для серверa
 host = '7416ae1d8072.ngrok.io'
 bot = telebot.TeleBot('1880721297:AAHg5RoKgNK6jgim7H3nieu-JB89LdH_NO8')
 bot.set_webhook(url=host)
